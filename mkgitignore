@@ -13,7 +13,7 @@ fi
 include_gitignore () {
     local  in_file="$1"
     local out_file="$2"
-    if [ -s "$in_file" ]; then
+    if [ -f "$in_file" ]; then
         local filename="`basename "$in_file"`"
         (
         echo "# **************************************************"
@@ -28,11 +28,11 @@ include_gitignore () {
 }
 
 include_gitignores () {
-    local list_file="$1$2"
-    local template_dir="$3"
-    local out_file="$4"
-    if [ -s "$list_file" ]; then
-        while read name; do
+    local list_file="$1"
+    local template_dir="$2"
+    local out_file="$3"
+    if [ -f "$list_file" ]; then
+        while read line; do
             if [ -z "$line" ] || [ "${line:0:1}" == "#" ]; then continue; fi
             local name="$line"
             local in_file="$templates_top_dir/$template_dir/$name.gitignore"
