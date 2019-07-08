@@ -2,49 +2,52 @@
 
 set -e # stop on error
 
-work_dir="`dirname "$0"`"
-repo_dir="$work_dir/gitignore"
+templates_top_dir="gitignore"
 
 if [ "$1" != "" ]; then
     out_file="$1"
 else
-    out_file="`readlink -f "$work_dir/../.gitignore"`"
+    out_file=/dev/stdout
 fi
 
 include_gitignore () {
     local  in_file="$1"
     local out_file="$2"
-    (
-    echo "# **************************************************"
-    echo "# `basename "$in_file"`"
-    echo "# **************************************************"
-    echo
-    cat "$in_file"
-    echo
-    echo
-    ) >> "$out_file"
+    if [ -s "$in_file" ]; then
+        local filename="`basename "$in_file"`"
+        (
+        echo "# **************************************************"
+        echo "# $filename"
+        echo "# **************************************************"
+        echo
+        cat "$in_file"
+        echo
+        echo
+        ) >> "$out_file"
+    fi
 }
 
 include_gitignores () {
-    local in_file="$1$2"
-    local in_dir="$3"
+    local list_file="$1$2"
+    local template_dir="$3"
     local out_file="$4"
-    if [ -s "$in_file" ]; then
-        while read line; do
+    if [ -s "$list_file" ]; then
+        while read name; do
             if [ -z "$line" ] || [ "${line:0:1}" == "#" ]; then continue; fi
-            name="$repo_dir/$in_dir/$line.gitignore"
-            include_gitignore "$name" "$out_file"
-        done < "$in_file"
-    else
-        for name in "$repo_dir/$in_dir"/*.gitignore; do
-            include_gitignore "$name" "$out_file"
-        done
+            local name="$line"
+            local in_file="$templates_top_dir/$template_dir/$name.gitignore"
+            include_gitignore "$in_file" "$out_file"
+        done < "$list_file"
+   #else
+   #    for name in "$templates_top_dir/$template_dir"/*.gitignore; do
+   #        include_gitignore "$name" "$out_file"
+   #    done
     fi
 }
 
 # initialize
 echo >| $out_file
 
-include_gitignores "$work_dir/"  "local.lst" .      "$out_file"
-include_gitignores "$work_dir/" "global.lst" Global "$out_file"
-include_gitignore  "$work_dir/repository.gitignore" "$out_file"
+include_gitignore  "repository.gitignore" "$out_file"
+include_gitignores  "local.lst" .         "$out_file"
+include_gitignores "global.lst" Global    "$out_file"
