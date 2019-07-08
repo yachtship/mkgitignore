@@ -1,0 +1,50 @@
+#! /bin/bash
+
+set -e # stop on error
+
+work_dir="`dirname "$0"`"
+repo_dir="$work_dir/gitignore"
+
+if [ "$1" != "" ]; then
+    out_file="$1"
+else
+    out_file="`readlink -f "$work_dir/../.gitignore"`"
+fi
+
+include_gitignore () {
+    local  in_file="$1"
+    local out_file="$2"
+    (
+    echo "# **************************************************"
+    echo "# `basename "$in_file"`"
+    echo "# **************************************************"
+    echo
+    cat "$in_file"
+    echo
+    echo
+    ) >> "$out_file"
+}
+
+include_gitignores () {
+    local in_file="$1$2"
+    local in_dir="$3"
+    local out_file="$4"
+    if [ -s "$in_file" ]; then
+        while read line; do
+            if [ -z "$line" ] || [ "${line:0:1}" == "#" ]; then continue; fi
+            name="$repo_dir/$in_dir/$line.gitignore"
+            include_gitignore "$name" "$out_file"
+        done < "$in_file"
+    else
+        for name in "$repo_dir/$in_dir"/*.gitignore; do
+            include_gitignore "$name" "$out_file"
+        done
+    fi
+}
+
+# initialize
+echo >| $out_file
+
+include_gitignores "$work_dir/"  "local.lst" .      "$out_file"
+include_gitignores "$work_dir/" "global.lst" Global "$out_file"
+include_gitignore  "$work_dir/repository.gitignore" "$out_file"
