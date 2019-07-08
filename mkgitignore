@@ -49,5 +49,6 @@ include_gitignores () {
 echo >| $out_file
 
 include_gitignore  "repository.gitignore" "$out_file"
+include_gitignore        "user.gitignore" "$out_file"
 include_gitignores  "local.lst" .         "$out_file"
 include_gitignores "global.lst" Global    "$out_file"
