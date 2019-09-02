@@ -5,7 +5,7 @@ set -e # stop on error
 templates_top_dir="gitignore"
 
 if [ "$1" != "" ]; then
-    out_file="$1"
+    out_file="`readlink -f "$1"`"
 else
     out_file=/dev/stdout
 fi
@@ -40,6 +40,15 @@ include_gitignores () {
         done < "$list_file"
     fi
 }
+
+change_working_dir () {
+    local script_path="`readlink -f "$0"`"
+    local script_dir="`dirname "$script_path"`"
+    local working_dir="`dirname "$script_dir"`"
+    cd "$working_dir"
+}
+
+change_working_dir
 
 # initialize
 echo >| $out_file
