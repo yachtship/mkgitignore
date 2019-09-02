@@ -38,10 +38,6 @@ include_gitignores () {
             local in_file="$templates_top_dir/$template_dir/$name.gitignore"
             include_gitignore "$in_file" "$out_file"
         done < "$list_file"
-   #else
-   #    for name in "$templates_top_dir/$template_dir"/*.gitignore; do
-   #        include_gitignore "$name" "$out_file"
-   #    done
     fi
 }
 
