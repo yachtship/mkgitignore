@@ -53,7 +53,7 @@ change_working_dir
 # initialize
 echo >| $out_file
 
-include_gitignore  "repository.gitignore" "$out_file" # for  local gitignore
-include_gitignore        "user.gitignore" "$out_file" # for global gitignore
 include_gitignores  "local.lst" .         "$out_file" # for  local gitignore
 include_gitignores "global.lst" Global    "$out_file" # for global gitignore
+include_gitignore  "repository.gitignore" "$out_file" # for  local gitignore
+include_gitignore        "user.gitignore" "$out_file" # for global gitignore
